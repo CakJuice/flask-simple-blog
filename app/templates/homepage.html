@@ -1,60 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>{% block title %}{% endblock %} | My Blog</title>
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-	<style type="text/css">
-		body {padding-top:60px;}
-	</style>
-	{% block extra_styles %}{% endblock %}
-	<script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-	{% block extra_scripts %}{% endblock %}
-</head>
-<body class="{% block body_class %}{% endblock %}">
-	<nav class="navbar navbar-inverse navbar-fixed-top">
-		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="#">{% block branding %}My Blog{% endblock %}</a>
-			</div>
-			<div class="collapse navbar-collapse">
-				<ul class="nav navbar-nav">
-					<li><a href="/">Home</a></li>
-					{% block extra_nav %}{% endblock %}
-				</ul>
-			</div>
-		</div>
-	</nav>
+{% extends 'base.html' %}
 
-	<div class="container">
-		<div class="row">
-			<div class="col-md-9">
-				<h1>{% block content_title %}{% endblock %}</h1>
-				{% block content %}{% endblock %}
-			</div>
+{% block content_title %}Welcome to my blog{% endblock %}
 
-			<div class="col-md-3">
-				{% block sidebar %}
-				<ul class="well nav nav-stacked">
-					<li><a href="#">Sidebar item</a></li>
-				</ul>
-				{% endblock %}
-			</div>
-		</div>
-
-		<div class="row">
-			<hr />
-			<footer>
-				<p>&copy; Cak Juice</p>
-			</footer>
-		</div>
-	</div>
-</body>
-</html>
+{% block content %}
+	{% if number %}
+		<p>Your number is {{ number|int }}</p>
+		<ul>
+			{% for i in range(number|int) %}
+				{% if i is divisibleby 2 %}
+					<li>{{ i }}</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>No number specified.</p>
+	{% endif %}
+	<p>Your name is {{ name|default('<unknown>', True) }}.</p>
+{% endblock %}
