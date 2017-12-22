@@ -38,4 +38,18 @@ def create():
 			return redirect(url_for('entries.detail', slug=entry.slug))
 	else:
 		form = EntryForm()
-		return render_template('entries/create.html', form=form)
+	return render_template('entries/create.html', form=form)
+
+@entries.route('/<slug>/edit/', methods=['GET', 'POST'])
+def edit(slug):
+	entry = Entry.query.filter(Entry.slug == slug).first_or_404()
+	if request.method == 'POST':
+		form = EntryForm(request.form, obj=entry)
+		if form.validate():
+			entry = form.save_entry(entry)
+			db.session.add(entry)
+			db.session.commit()
+			return redirect(url_for('entries.detail', slug=entry.slug))
+	else:
+		form = EntryForm(obj=entry)
+	return render_template('entries/edit.html', entry=entry, form=form)
