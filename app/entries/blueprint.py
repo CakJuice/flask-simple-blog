@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, request, url_for
 from models import Entry, Tag
-from helpers import object_list, entry_list
+from helpers import object_list, entry_list, get_entry_or_404
 from entries.forms import EntryForm
 from app import db
 
@@ -24,7 +24,8 @@ def tag_detail(slug):
 
 @entries.route('/<slug>/')
 def detail(slug):
-	entry = Entry.query.filter(Entry.slug == slug).first_or_404()
+	# entry = Entry.query.filter(Entry.slug == slug).first_or_404()
+	entry = get_entry_or_404(slug)
 	return render_template('entries/detail.html', entry=entry)
 
 @entries.route('/create/', methods=['GET', 'POST'])
@@ -42,7 +43,8 @@ def create():
 
 @entries.route('/<slug>/edit/', methods=['GET', 'POST'])
 def edit(slug):
-	entry = Entry.query.filter(Entry.slug == slug).first_or_404()
+	# entry = Entry.query.filter(Entry.slug == slug).first_or_404()
+	entry = get_entry_or_404(slug)
 	if request.method == 'POST':
 		form = EntryForm(request.form, obj=entry)
 		if form.validate():
@@ -53,3 +55,14 @@ def edit(slug):
 	else:
 		form = EntryForm(obj=entry)
 	return render_template('entries/edit.html', entry=entry, form=form)
+
+@entries.route('/<slug>/delete/', methods=['GET', 'POST'])
+def delete(slug):
+	# entry = Entry.query.filter(Entry.slug == slug).first_or_404()
+	entry = get_entry_or_404(slug)
+	if request.method == 'POST':
+		entry.status = Entry.STATUS_DELETED
+		db.session.add(entry)
+		db.session.commit()
+		return redirect(url_for('entries.index'))
+	return render_template('entries/delete.html', entry=entry)
