@@ -11,3 +11,5 @@ class Configuration(object):
 	example -> postgresql://postgres:secretpassword@localhost:5432/blog_db
 	"""
 	SQLALCHEMY_DATABASE_URI = 'sqlite:///{}/blog.db'.format(APPLICATION_DIR)
+
+	SECRET_KEY = 'j7T7o3PAbIbuKhrJOWcPLVAEguDpxCJK'
