@@ -34,6 +34,9 @@ class TagField(wtforms.StringField):
 		else:
 			self.data = []
 
+class ImageForm(wtforms.Form):
+	file = wtforms.FileField('Image File')
+
 class EntryForm(wtforms.Form):
 	title = wtforms.StringField('Title', validators=[DataRequired()])
 	body = wtforms.TextAreaField('Body', validators=[DataRequired()])

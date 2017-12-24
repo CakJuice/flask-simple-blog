@@ -13,3 +13,6 @@ class Configuration(object):
 	SQLALCHEMY_DATABASE_URI = 'sqlite:///{}/blog.db'.format(APPLICATION_DIR)
 
 	SECRET_KEY = 'j7T7o3PAbIbuKhrJOWcPLVAEguDpxCJK'
+
+	STATIC_DIR = os.path.join(APPLICATION_DIR, 'static')
+	IMAGES_DIR = os.path.join(STATIC_DIR, 'images')
