@@ -16,5 +16,9 @@
 {% endblock %}
 
 {% block content %}
+	<div style="margin-bottom: 20px">
+		<a class="btn btn-primary" href="{{ url_for('entries.edit', slug=entry.slug) }}">Edit</a>
+		<a class="btn btn-danger" href="{{ url_for('entries.delete', slug=entry.slug) }}">Delete</a>
+	</div>
 	{{ entry.body }}
 {% endblock %}

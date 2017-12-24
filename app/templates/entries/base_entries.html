@@ -12,6 +12,9 @@
 {% endblock %}
 
 {% block content %}
+	<div style="margin-bottom: 20px">
+		<a class="btn btn-primary" href="{{ url_for('entries.create') }}">Create New Entry</a>
+	</div>
 	{% include 'includes/list.html' %}
 	{% include 'includes/page_links.html' %}
 {% endblock %}
