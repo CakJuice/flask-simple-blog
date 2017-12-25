@@ -4,3 +4,4 @@ flask-migrate
 flask-script
 wtforms
 ipython
+Flask-Login
