@@ -3,6 +3,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
+from flask_bcrypt import Bcrypt
 
 # import our configuration data.
 from config import Configuration
@@ -23,3 +24,5 @@ login_manager.login_view = 'login'
 @app.before_request
 def _before_request():
 	g.user = current_user
+
+bcrypt = Bcrypt(app)
