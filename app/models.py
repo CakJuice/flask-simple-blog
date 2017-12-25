@@ -1,5 +1,5 @@
 import datetime, re
-from app import db
+from app import db, login_manager
 
 def slugify(s):
 	return re.sub('[^\w]+', '-', s).lower()
@@ -65,3 +65,20 @@ class User(db.Model):
 	def generate_slug(self):
 		if self.name:
 			self.slug = slugify(self.name)
+
+	# Flask-Login interface..
+	def get_id(self):
+		return unicode(self.id)
+
+	def is_authenticated(self):
+		return True
+
+	def is_active(self):
+		return self.active
+
+	def is_anonymous(self):
+		return False
+
+@login_manager.user_loader
+def _user_loader(user_id):
+	return User.query.get(int(user_id))
