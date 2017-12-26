@@ -17,7 +17,7 @@ def login():
 			form = LoginForm(request.form)
 			if form.validate():
 				login_user(form.user, remember=form.remember_me.data)
-				flash("Successfully logged in as {0}.".format(form.user.email, 'success'))
+				flash("Successfully logged in as {0}.".format(form.user.email), 'success')
 				return redirect(request.args.get('next') or url_for('homepage'))
 		else:
 			form = LoginForm()

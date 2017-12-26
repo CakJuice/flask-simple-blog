@@ -37,7 +37,8 @@ def create():
 	if request.method == 'POST':
 		form = EntryForm(request.form)
 		if form.validate():
-			entry = form.save_entry(Entry())
+			# entry = form.save_entry(Entry())
+			entry = form.save_entry(Entry(author=g.user))
 			db.session.add(entry)
 			db.session.commit()
 			flash("Entry {0} created successfully.".format(entry.title), 'success')
@@ -50,7 +51,7 @@ def create():
 @login_required
 def edit(slug):
 	# entry = Entry.query.filter(Entry.slug == slug).first_or_404()
-	entry = get_entry_or_404(slug)
+	entry = get_entry_or_404(slug, author=None)
 	if request.method == 'POST':
 		form = EntryForm(request.form, obj=entry)
 		if form.validate():
@@ -67,7 +68,7 @@ def edit(slug):
 @login_required
 def delete(slug):
 	# entry = Entry.query.filter(Entry.slug == slug).first_or_404()
-	entry = get_entry_or_404(slug)
+	entry = get_entry_or_404(slug, author=None)
 	if request.method == 'POST':
 		entry.status = Entry.STATUS_DELETED
 		db.session.add(entry)
