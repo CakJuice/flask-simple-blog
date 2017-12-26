@@ -4,7 +4,16 @@ from flask_admin.contrib.sqla import ModelView
 from app import app, db
 from models import Entry, Tag, User
 
-class EntryModelView(ModelView):
+class BaseModelView(ModelView):
+	pass
+
+class SlugModelView(ModelView):
+	# Override
+	def on_model_change(self, form, model, is_created):
+		model.generate_slug()
+		return super(SlugModelView, self).on_model_change(form, model, is_created)
+
+class EntryModelView(SlugModelView):
 	# Customizing List View
 	_choices = [
 		(Entry.STATUS_PUBLIC, "Public"),
@@ -38,7 +47,7 @@ class EntryModelView(ModelView):
 		}
 	}
 
-class UserModelView(ModelView):
+class UserModelView(SlugModelView):
 	column_filters = ['email', 'name', 'active']
 	column_list = ['email', 'name', 'active', 'created_timestamp']
 	column_searchable_list = ['email', 'name']
@@ -48,6 +57,7 @@ class UserModelView(ModelView):
 		'password': PasswordField("New Password")
 	}
 
+	# Override
 	def on_model_change(self, form, model, is_created):
 		if form.password.data:
 			model.password_hash = User.make_password(form.password.data)
