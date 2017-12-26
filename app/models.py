@@ -1,8 +1,20 @@
 import datetime, re
 from app import db, login_manager, bcrypt
 
-def slugify(s):
-	return re.sub('[^\w]+', '-', s).lower()
+def slugify(model_obj, slug_string, slug_obj_string):
+	slug = re.sub('[^\w]+', '-', slug_string).lower()
+	obj = getattr(model_obj, slug_obj_string)
+	model = model_obj.query.filter(obj.startswith(slug)).order_by(obj.desc()).first()
+	if model:
+		idx_slug = model.slug.split('-')[-1]
+		print(idx_slug)
+		if idx_slug.isdigit():
+			idx_new = int(idx_slug) + 1
+			return "{0}-{1}".format(slug, idx_new)
+		else:
+			return "{0}-1".format(slug)
+	else:
+		return slug 
 
 entry_tags = db.Table('entry_tags',
 	db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
@@ -33,7 +45,7 @@ class Entry(db.Model):
 	def generate_slug(self):
 		self.slug = ''
 		if self.title:
-			self.slug = slugify(self.title)
+			self.slug = slugify(Entry, self.title, 'slug')
 
 	def __repr__(self):
 		return '<Entry: {0}>'.format(self.title)
@@ -45,7 +57,7 @@ class Tag(db.Model):
 
 	def __init__(self, *args, **kwargs):
 		super(Tag, self).__init__(*args, **kwargs)
-		self.slug = slugify(self.name)
+		self.slug = slugify(Tag, self.title, 'slug')
 
 	def __repr__(self):
 		return '<Tag: {0}>'.format(self.name)
@@ -69,7 +81,7 @@ class User(db.Model):
 
 	def generate_slug(self):
 		if self.name:
-			self.slug = slugify(self.name)
+			self.slug = slugify(User, self.title, 'slug')
 
 	# Flask-Login interface..
 	def get_id(self):
