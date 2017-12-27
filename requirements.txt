@@ -7,3 +7,4 @@ ipython
 Flask-Login
 flask-bcrypt
 Flask-Admin
+Flask-Restless
