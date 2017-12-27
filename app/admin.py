@@ -1,14 +1,19 @@
 from wtforms.fields import SelectField, PasswordField
-from flask_admin import Admin
+from flask import g, url_for
+from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.fileadmin import FileAdmin
 from app import app, db
 from models import Entry, Tag, User
 
-class BaseModelView(ModelView):
+class AdminAuthentication(object):
+	def is_accessible(self):
+		return g.user.is_authenticated and g.user.is_admin()
+
+class BaseModelView(AdminAuthentication, ModelView):
 	pass
 
-class SlugModelView(ModelView):
+class SlugModelView(BaseModelView):
 	# Override
 	def on_model_change(self, form, model, is_created):
 		model.generate_slug()
@@ -64,10 +69,17 @@ class UserModelView(SlugModelView):
 			model.password_hash = User.make_password(form.password.data)
 			return super(UserModelView, self).on_model_change(form, model, is_created)
 
-class BlogFileAdmin(FileAdmin):
+class BlogFileAdmin(AdminAuthentication, FileAdmin):
 	pass
 
-admin = Admin(app, 'Blog Admin')
+class IndexView(AdminIndexView):
+	@expose('/')
+	def index(self):
+		if not (g.user.is_authenticated and g.user.is_admin()):
+			return redirect(url_for('login', next=request.path))
+		return self.render('admin/index.html')
+
+admin = Admin(app, 'Blog Admin', index_view=IndexView())
 admin.add_view(EntryModelView(Entry, db.session))
 admin.add_view(ModelView(Tag, db.session))
 admin.add_view(UserModelView(User, db.session))
