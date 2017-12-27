@@ -50,6 +50,14 @@ class Entry(db.Model):
 	def __repr__(self):
 		return '<Entry: {0}>'.format(self.title)
 
+	@property
+	def tag_list(self):
+		return ", ".join(tag.name for tag in self.tags)
+
+	@property
+	def tease(self):
+		return self.body[:100]
+
 class Tag(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(64))
@@ -57,7 +65,7 @@ class Tag(db.Model):
 
 	def __init__(self, *args, **kwargs):
 		super(Tag, self).__init__(*args, **kwargs)
-		self.slug = slugify(Tag, self.title, 'slug')
+		self.slug = slugify(Tag, self.name, 'slug')
 
 	def __repr__(self):
 		return '<Tag: {0}>'.format(self.name)
@@ -69,6 +77,7 @@ class User(db.Model):
 	name = db.Column(db.String(64))
 	slug = db.Column(db.String(64), unique=True)
 	active = db.Column(db.Boolean, default=True)
+	admin = db.Column(db.Boolean, default=False)
 	created_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 	entries = db.relationship('Entry', backref='author', lazy='dynamic')
 
@@ -81,7 +90,7 @@ class User(db.Model):
 
 	def generate_slug(self):
 		if self.name:
-			self.slug = slugify(User, self.title, 'slug')
+			self.slug = slugify(User, self.name, 'slug')
 
 	# Flask-Login interface..
 	def get_id(self):
@@ -95,6 +104,9 @@ class User(db.Model):
 
 	def is_anonymous(self):
 		return False
+
+	def is_admin(self):
+		return self.admin
 
 	@staticmethod
 	def make_password(plaintext):

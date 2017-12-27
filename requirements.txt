@@ -6,3 +6,4 @@ wtforms
 ipython
 Flask-Login
 flask-bcrypt
+Flask-Admin
