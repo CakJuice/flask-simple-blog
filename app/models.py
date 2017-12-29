@@ -1,4 +1,4 @@
-import datetime, re
+import datetime, re, urllib, hashlib
 from app import db, login_manager, bcrypt
 
 def slugify(model_obj, slug_string, slug_obj_string):
@@ -148,3 +148,8 @@ class Comment(db.Model):
 
 	def __repr__(self):
 		return '<Comment from: {0}>'.format(self.name)
+
+	def gravatar(self, size=75):
+		return 'http://www.gravatar.com/avatar.php?{0}'.format(urllib.parse.urlencode({
+			'gravatar_id': hashlib.md5((self.email).encode('utf-8')).hexdigest(),
+			'size': str(size)}))

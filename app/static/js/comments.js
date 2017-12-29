@@ -1,10 +1,62 @@
 Comments = window.Comments || {};
 
 (function(exports, $) {
+	function displayNoComments() {
+		noComments = $('<h3>', {
+			'text': 'No comments have been posted yet.'
+		});
+		$('h4#comment-form').before(noComments);
+	}
+
+	/* Template string for rendering a comment. */
+	var commentTemplate = (
+		'<div class="media">' +
+			'<a class="pull-left" href="{url}">' +
+				'<img class="media-object" src="{gravatar}"/>' +
+			'</a>' +
+			'<div class="media-body">' +
+				'<h4 class="media-heading">{created_timestamp}<h4>{body}' +
+			'</div>' +
+		'</div>'
+	);
+
+	function renderComment(comment) {
+		var createdDate = new Date(comment.created_timestamp).toDateString();
+		return (commentTemplate.replace('{url}', comment.url)
+			.replace('{gravatar}', comment.gravatar)
+			.replace('{created_timestamp}', createdDate)
+			.replace('{body}', comment.body));
+	}
+
+	function displayComments(comments) {
+		$.each(comments, function(idx, comment) {
+			var commentMarkup = renderComment(comment);
+			$('h4#comment-form').before($(commentMarkup));
+		});
+	}
+
+	function load(entryId) {
+		var filters = [{
+			'name': 'entry_id',
+			'op': 'eq',
+			'val': entryId
+		}];
+
+		var serializedQuery = JSON.stringify({filters: filters});
+
+		$.get('/api/comment', {q: serializedQuery}, function(data) {
+			if (data['num_results'] === 0) {
+				displayNoComments();
+			} else {
+				displayComments(data['objects']);
+			}
+		});
+	}
+
 	/* Template string for rendering success or error messages. */
 	var alertMarkup = (
 		'<div class="alert alert-{class} alert-dismissable">' +
-		'<button type="button" class="close" data-dimiss="alert" aria-hidden="true">&times;</button>' +
+		'<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' +
 		'<strong>{title}</strong> {body}</div>'
 	);
 
@@ -53,5 +105,6 @@ Comments = window.Comments || {};
 		});
 	}
 
+	exports.load = load;
 	exports.bindHandler = bindHandler;
 }) (Comments, jQuery);
