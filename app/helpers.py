@@ -21,7 +21,6 @@ def entry_list(template, query, **context):
 				(Entry.body.contains(search)) |
 				(Entry.title.contains(search)))
 
-	print(query.all())
 	return object_list(template, query, **context)
 
 # def get_entry_or_404(slug):

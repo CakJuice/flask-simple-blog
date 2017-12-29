@@ -7,7 +7,6 @@ def slugify(model_obj, slug_string, slug_obj_string):
 	model = model_obj.query.filter(obj.startswith(slug)).order_by(obj.desc()).first()
 	if model:
 		idx_slug = model.slug.split('-')[-1]
-		print(idx_slug)
 		if idx_slug.isdigit():
 			idx_new = int(idx_slug) + 1
 			return "{0}-{1}".format(slug, idx_new)

@@ -1,5 +1,5 @@
 import wtforms
-from wtforms.validators import DataRequired
+from wtforms import validators
 from models import Entry, Tag
 
 class TagField(wtforms.StringField):
@@ -38,8 +38,8 @@ class ImageForm(wtforms.Form):
 	file = wtforms.FileField('Image File')
 
 class EntryForm(wtforms.Form):
-	title = wtforms.StringField('Title', validators=[DataRequired()])
-	body = wtforms.TextAreaField('Body', validators=[DataRequired()])
+	title = wtforms.StringField('Title', validators=[validators.DataRequired()])
+	body = wtforms.TextAreaField('Body', validators=[validators.DataRequired()])
 	status = wtforms.SelectField(
 		'Entry Status',
 		choices = (
@@ -56,3 +56,28 @@ class EntryForm(wtforms.Form):
 		self.populate_obj(entry)
 		entry.generate_slug()
 		return entry
+
+class CommentForm(wtforms.Form):
+	name = wtforms.StringField('Name',
+		validators=[validators.DataRequired()])
+	email = wtforms.StringField('Email',
+		validators=[validators.DataRequired(), validators.Email()])
+	url = wtforms.StringField('URL',
+		validators=[validators.Optional(), validators.URL()])
+	body = wtforms.TextAreaField('Comment',
+		validators=[validators.DataRequired(), validators.Length(min=10, max=3000)])
+	entry_id = wtforms.HiddenField(validators=[validators.DataRequired()])
+
+	def validate(self):
+		if not super(CommentForm, self).validate():
+			return False
+
+		# Ensure that entry_id maps to a public Entry.
+		entry = Entry.query.filter(
+			(Entry.status == Entry.STATUS_PUBLIC) &
+			(Entry.id == self.entry_id.data)).first()
+
+		if not entry:
+			return False
+
+		return True
