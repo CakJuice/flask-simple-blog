@@ -5,6 +5,7 @@ from flask_script import Manager
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_bcrypt import Bcrypt
+from flask_wtf.csrf import CSRFProtect
 
 # import our configuration data.
 from config import Configuration
@@ -29,6 +30,8 @@ def _before_request():
 	g.user = current_user
 
 bcrypt = Bcrypt(app)
+
+csrf = CSRFProtect(app)
 
 """set logging"""
 # from logging.handlers import RotatingFileHandler

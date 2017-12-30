@@ -8,6 +8,7 @@
 
 {% block content %}
 	<form action="{{ url_for('login', next=request.args.get('next', '')) }}" class="form-horizontal" method="post">
+		{{ form.csrf_token }}
 		{{ form_field(form.email) }}
 		{{ form_field(form.password) }}
 		<div class="form-group">

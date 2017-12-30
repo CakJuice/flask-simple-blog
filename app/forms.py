@@ -1,8 +1,10 @@
 import wtforms
 from wtforms import validators
+from flask_wtf import FlaskForm
+from app import app
 from models import User
 
-class LoginForm(wtforms.Form):
+class LoginForm(FlaskForm):
 	email = wtforms.StringField("Email", validators=[validators.DataRequired()])
 	password = wtforms.PasswordField("Password", validators=[validators.DataRequired()])
 	remember_me = wtforms.BooleanField("Remember me?", default=True)

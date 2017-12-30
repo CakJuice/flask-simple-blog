@@ -3,9 +3,9 @@ flask-sqlalchemy
 flask-migrate
 flask-script
 wtforms
+Flask-WTF
 ipython
 Flask-Login
 flask-bcrypt
 Flask-Admin
 Flask-Restless
-flask-seasurf
