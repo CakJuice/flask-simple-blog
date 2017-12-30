@@ -16,3 +16,5 @@ class Configuration(object):
 
 	STATIC_DIR = os.path.join(APPLICATION_DIR, 'static')
 	IMAGES_DIR = os.path.join(STATIC_DIR, 'images')
+
+	JSONIFY_PRETTYPRINT_REGULAR = False

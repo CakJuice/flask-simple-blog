@@ -1,7 +1,9 @@
 import os, sys
 sys.path.append(os.path.realpath(os.pardir))
 import unittest
-from main import app
+import json
+import tempfile
+from main import app, db
 
 class FlaskLoginMixin():
 	LOGIN_URL = '/login/'
@@ -18,7 +20,7 @@ class FlaskLoginMixin():
 
 class AppTest(unittest.TestCase, FlaskLoginMixin):
 	ADMIN_URL = '/admin/'
-	
+
 	def setUp(self):
 		self.app = app.test_client()
 
@@ -65,6 +67,37 @@ class AppTest(unittest.TestCase, FlaskLoginMixin):
 		response = self.app.get(self.ADMIN_URL)
 		self.assertEqual(response.status_code, 302)
 		self.assertTrue("redirected" in str(response.data))
+
+class APITest(unittest.TestCase, FlaskLoginMixin):
+	def setUp(self):
+		"""create temporary database to testing the application"""
+		self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
+		app.testing = True
+		self.app = app.test_client()
+		with app.app_context():
+			db.create_all()
+
+		self.comment_data = {
+			'name': 'admin',
+			'email': 'admin@test.com',
+			'url': 'http://localhost',
+			'ip_address': '127.0.0.1',
+			'body': 'Test comment',
+			'entry_id': 1
+		}
+
+	def tearDown(self):
+		os.close(self.db_fd)
+		os.unlink(app.config['DATABASE'])
+
+	def test_adding_comment(self):
+		self.login('test@test.com', 'test')
+		response = self.app.post('/api/comment', data=json.dumps(self.comment_data),
+			content_type="application/json")
+		self.assertEqual(response.status_code, 201)
+		self.assertTrue("body" in response.get_data(as_text=True))
+		data = json.loads(response.get_data(as_text=True))
+		self.assertEqual(data['body'], self.comment_data['body'])
 
 if __name__ == '__main__':
 	unittest.main()
