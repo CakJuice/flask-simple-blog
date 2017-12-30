@@ -29,3 +29,10 @@ def _before_request():
 	g.user = current_user
 
 bcrypt = Bcrypt(app)
+
+"""set logging"""
+# from logging.handlers import RotatingFileHandler
+# file_handler = RotatingFileHandler('blog.log')
+# app.logger.addHandler(file_handler)
+
+# to add log file just add script -> app.logger.info("Homepage has been accessed.")
